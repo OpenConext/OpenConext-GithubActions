@@ -49,6 +49,16 @@ jobs:
         with:
           args: '"*/target/*.zip" --max-depth 3 --no-gitignore'
 
+      - name: Upload the produced artefacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: invitebuilds
+          path: |
+            ${{ steps.jarpackages.outputs.files }}
+            ${{ steps.ziparchives.outputs.files }}
+          retention-days: 1
+        if: github.event_name == 'workflow_dispatch'
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -57,3 +67,5 @@ jobs:
             ${{ steps.ziparchives.outputs.files }}
           token: ${{ secrets.GITHUB_TOKEN }}
           generate_release_notes: true
+        if: github.event_name != 'workflow_dispatch'
+
