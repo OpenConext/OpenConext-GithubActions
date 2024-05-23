@@ -11,7 +11,7 @@ on:
         type: string
 
 jobs:
-  build:
+  build-and-release-symfony:
     permissions:
       contents: write
 
@@ -26,8 +26,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: OpenConext/Stepup-Build
-      - name: debug
-        run: echo "${GITHUB_REF#refs/*/}"
+     
       - name: Run release script
         run: ./stepup-build.sh ${COMPONENT_NAME} --tag ${TAG}
 
