@@ -1,0 +1,59 @@
+name: build-java-release
+
+on:
+  workflow_call:
+    inputs:
+      java_version:
+        required: true
+        type: string
+
+jobs:
+  build-and-release-java:
+    permissions:
+      contents: write
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    
+    if: always()
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ inputs.java_version }}
+          distribution: "temurin"
+
+      - name: Set up cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Build with Maven
+        run: mvn --batch-mode install -DskipTests
+
+      - name: Find resulting jar packages 
+        uses: jeertmans/filesfinder@latest
+        id: jarpackages
+        with:
+          args: '"*/target/*.jar" --max-depth 3 --no-gitignore'
+
+      - name: Find resulting zip archives 
+        uses: jeertmans/filesfinder@latest
+        id: ziparchives
+        with:
+          args: '"*/target/*.zip" --max-depth 3 --no-gitignore'
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ steps.jarpackages.outputs.files }}
+            ${{ steps.ziparchives.outputs.files }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generate_release_notes: true
