@@ -1,0 +1,47 @@
+name: build-release
+
+on:
+  workflow_call:
+    inputs:
+      component_name:
+        required: true
+        type: string
+      tag:
+        required: true
+        type: string
+
+jobs:
+  build:
+    permissions:
+      contents: write
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      COMPONENT_NAME: ${{ inputs.component_name }} 
+      TAG: ${{ inputs.tag }}
+    if: always()
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: OpenConext/Stepup-Build
+
+      - name: Run release script
+        run: ./stepup-build.sh ${COMPONENT_NAME} --tag ${TAG}
+
+      - name: Grab the archive filename
+        id: archive
+        run: |
+          echo "archive=$(find . -maxdepth 1 -name "$COMPONENT_NAME*.tar.bz2" -printf '%f\n')" >> $GITHUB_OUTPUT
+          echo "shasum=$(find . -maxdepth 1 -name "$COMPONENT_NAME*.sha" -printf '%f\n')" >> $GITHUB_OUTPUT
+
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ${{ steps.archive.outputs.archive }}
+            ${{ steps.archive.outputs.shasum }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fail_on_unmatched_files: true
+          generate_release_notes: true
