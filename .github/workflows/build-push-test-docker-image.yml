@@ -1,0 +1,70 @@
+name: build-push-test-docker-image
+
+on:
+  workflow_call:
+    inputs: 
+      use_yarn:
+        required: true
+        type: boolean
+      component_name:
+        required: true
+        type: string
+
+jobs:
+  build-push-test-docker-image:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+     
+      - name: Set repository name
+        id: repo-name
+        run: echo "REPO_NAME=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_ENV
+
+      - name: Set the component name
+        id: component-name
+        run: echo "COMPONENT_NAME=$(basename ${{ inputs.component_name }})" >> $GITHUB_ENV
+     
+      - name: Build the app
+        uses: openconext/build-and-publish-test-container/php82-node20@main
+        with:
+          use_yarn: ${{ inputs.use_yarn }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set docker labels and tags
+        id: meta
+        uses: docker/metadata-action@v5
+        with:          
+          images: ghcr.io/openconext/${{ env.REPO_NAME}}/${{ env.COMPONENT_NAME }}
+          flavor: |
+            latest=false
+            suffix=-test
+          tags: |
+            type=ref,event=tag
+            type=semver,pattern={{version}}
+            type=sha
+            type=raw,suffix=,value=test
+
+      - name: Build and push the TEST image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile.test
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
