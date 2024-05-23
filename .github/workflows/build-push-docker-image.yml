@@ -30,7 +30,7 @@ jobs:
 
       - name: Set the component name
         id: component-name
-        run: echo "COMPONENT_NAME=$(basename ${{ inputs.component_name }}" >> $GITHUB_ENV
+        run: echo "COMPONENT_NAME=$(basename ${{ inputs.component_name }})" >> $GITHUB_ENV
 
       - name: Get the latest release
         id: release
