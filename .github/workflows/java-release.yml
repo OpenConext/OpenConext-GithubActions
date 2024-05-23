@@ -30,11 +30,10 @@ jobs:
       - name: Build with Maven
         run: mvn --batch-mode install -DskipTests
 
-      - name: Find resulting jar packages 
-        uses: jeertmans/filesfinder@latest
-        id: jarpackages
-        with:
-          args: '"*/target/*.jar" --max-depth 3 --no-gitignore'
+      - name: Find resulting files
+        run: |
+          files=$(find -path './*/target'  -name '*.zip' -o -name '*.jar')
+          echo "files=$files" >> $GITHUB_ENV
 
       - name: Find resulting zip archives 
         uses: jeertmans/filesfinder@latest
@@ -46,18 +45,14 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: invitebuilds
-          path: |
-            ${{ steps.jarpackages.outputs.files }}
-            ${{ steps.ziparchives.outputs.files }}
+          path: ${{ env.files }}
           retention-days: 1
         if: github.event_name == 'workflow_dispatch'
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            ${{ steps.jarpackages.outputs.files }}
-            ${{ steps.ziparchives.outputs.files }}
+          files: ${{ env.files }}
           token: ${{ secrets.GITHUB_TOKEN }}
           generate_release_notes: true
         if: github.event_name != 'workflow_dispatch'
