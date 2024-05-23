@@ -57,6 +57,9 @@ jobs:
       - name: npm audit
         if: steps.check_node_npm.outputs.files_exists == 'true'
         run: npm audit --audit-level=high
+      - name: npm audit on -gui projects
+        if: steps.check_node_npm.outputs.files_exists == 'true'
+        run: find . -maxdepth 1 -type d -name "*-gui" \( ! -name . \) -exec bash -c "cd '{}' && npm i && npm audit --only=prod --audit-level=high" \;
 
       # python checks
       - name: Check for python project
