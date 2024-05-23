@@ -30,15 +30,13 @@ jobs:
       - name: Build with Maven
         run: mvn --batch-mode install -DskipTests
 
-      - name: Find resulting files
-        run: |
-          files=$(find . -type f \(  -path './target/*.jar' -o  -path './target/*.zip' -o -path './*/target/*.zip' -o -path './*/target/*.jar' \)  -print > files_to_upload.txt
-
       - name: Upload the produced artefacts
         uses: actions/upload-artifact@v4
         with:
           name: invitebuilds
-          path: $(cat files_to_upload.txt)
+          path: |
+            **/target/*.jar
+            **/target/*.zip
           retention-days: 1
         if: github.event_name == 'workflow_dispatch'
 
