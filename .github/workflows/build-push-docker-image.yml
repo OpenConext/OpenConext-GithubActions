@@ -64,7 +64,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/openconext/$REPO_NAME/$COMPONENT_NAME
+          images: ghcr.io/openconext/${{ env.REPO_NAME}}/${{ env.COMPONENT_NAME }}
           tags: |
             type=ref,event=tag
             type=semver,pattern={{version}}
