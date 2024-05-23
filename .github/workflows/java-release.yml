@@ -43,7 +43,9 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: $(cat files_to_upload.txt)
+          files: |
+            **/target/*.jar
+            **/target/*.zip
           token: ${{ secrets.GITHUB_TOKEN }}
           generate_release_notes: true
         if: github.event_name != 'workflow_dispatch'
