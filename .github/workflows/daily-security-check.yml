@@ -2,6 +2,9 @@
 name: Daily security check
 on:
   workflow_call:
+    secrets:
+      NVD_API_KEY:
+        required: false
 
 jobs:
   security:
