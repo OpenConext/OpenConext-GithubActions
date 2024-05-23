@@ -32,27 +32,20 @@ jobs:
 
       - name: Find resulting files
         run: |
-          files=$(find . -type f \(  -path './target/*.jar' -o  -path './target/*.zip' -o -path './*/target/*.zip' -o -path './*/target/*.jar' \)  -print | paste -sd '\n' )
-          echo "files=$files" >> $GITHUB_ENV
-
-      - name: Find resulting zip archives 
-        uses: jeertmans/filesfinder@latest
-        id: ziparchives
-        with:
-          args: '"*/target/*.zip" --max-depth 3 --no-gitignore'
+          files=$(find . -type f \(  -path './target/*.jar' -o  -path './target/*.zip' -o -path './*/target/*.zip' -o -path './*/target/*.jar' \)  -print > files_to_upload.txt
 
       - name: Upload the produced artefacts
         uses: actions/upload-artifact@v4
         with:
           name: invitebuilds
-          path: ${{ env.files }}
+          path: $(cat files_to_upload.txt)
           retention-days: 1
         if: github.event_name == 'workflow_dispatch'
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ env.files }}
+          files: $(cat files_to_upload.txt)
           token: ${{ secrets.GITHUB_TOKEN }}
           generate_release_notes: true
         if: github.event_name != 'workflow_dispatch'
