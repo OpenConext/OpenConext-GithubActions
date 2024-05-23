@@ -32,7 +32,7 @@ jobs:
 
       - name: Find resulting files
         run: |
-          files=$(find -path './*/target'  -name '*.zip' -o -name '*.jar')
+          files=$(find . -type f \(  -path './target/*.jar' -o  -path './target/*.zip' -o -path './*/target/*.zip' -o -path './*/target/*.jar' \)  -print | paste -sd '\n' )
           echo "files=$files" >> $GITHUB_ENV
 
       - name: Find resulting zip archives 
