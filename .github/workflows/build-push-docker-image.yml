@@ -45,6 +45,7 @@ jobs:
           echo "sha=$(git rev-list -n 1 ${{ steps.release.outputs.tag_name }})" >> $GITHUB_OUTPUT
           echo "commit_time=$(git show -s --format=%ci ${{ steps.release.outputs.tag_name }})" >> $GITHUB_OUTPUT
 
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -66,6 +67,7 @@ jobs:
           tags: |
             type=ref,event=tag
             type=semver,pattern={{version}}
+            type=semver,pattern={{version}},value=${{ inputs.tag }}
             type=sha
             type=raw,value=prod
 
