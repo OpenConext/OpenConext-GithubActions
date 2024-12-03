@@ -13,13 +13,13 @@ jobs:
   build-push-docker-image:
     permissions:
       packages: write
-    
+
     runs-on: ubuntu-latest
-    
+
     timeout-minutes: 30
     env:
       TAG: ${{ inputs.tag }}
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,7 +38,7 @@ jobs:
         with:
           fileName: "*.tar.bz2"
           tag: "${{ inputs.tag }}"
-      
+
       - name: Get commit details for the tag from the latest release
         id: commit_details
         run: |
@@ -57,7 +57,7 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Set docker labels and tags
         id: meta
         uses: docker/metadata-action@v5

@@ -2,7 +2,7 @@ name: build-push-test-docker-image
 
 on:
   workflow_call:
-    inputs: 
+    inputs:
       use_yarn:
         required: true
         type: boolean
@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-     
+
       - name: Set repository name
         id: repo-name
         run: echo "REPO_NAME=$(basename $GITHUB_REPOSITORY)" >> $GITHUB_ENV
@@ -26,7 +26,7 @@ jobs:
       - name: Set the component name
         id: component-name
         run: echo "COMPONENT_NAME=$(basename ${{ inputs.component_name }})" >> $GITHUB_ENV
-     
+
       - name: Build the app
         uses: openconext/build-and-publish-test-container/php82-node20@main
         with:
@@ -48,7 +48,7 @@ jobs:
       - name: Set docker labels and tags
         id: meta
         uses: docker/metadata-action@v5
-        with:          
+        with:
           images: ghcr.io/openconext/${{ env.REPO_NAME}}/${{ env.COMPONENT_NAME }}
           flavor: |
             latest=false
