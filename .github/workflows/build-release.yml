@@ -33,7 +33,7 @@ jobs:
       - name: Grab the archive filename
         id: archive
         run: |
-          echo "files=EOF" >> $GITHUB_OUTPUT
+          echo "files<<EOF" >> $GITHUB_OUTPUT
           find . -maxdepth 1 -name "$COMPONENT_NAME*.tar.*" >> $GITHUB_OUTPUT
           find . -maxdepth 1 -name "$COMPONENT_NAME*.sha"   >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
