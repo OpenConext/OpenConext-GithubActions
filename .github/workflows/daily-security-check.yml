@@ -32,7 +32,7 @@ jobs:
           files: "yarn.lock"
       - name: Setup node
         if: steps.check_node_yarn.outputs.files_exists == 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 18
       - name: Setup PHP 8.2
@@ -54,7 +54,7 @@ jobs:
           files: "package.lock"
       - name: Setup node
         if: steps.check_node_npm.outputs.files_exists == 'true'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 18
       - name: npm audit
