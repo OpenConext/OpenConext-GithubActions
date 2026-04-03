@@ -34,7 +34,7 @@ jobs:
 
       - name: Get the latest release
         id: release
-        uses: robinraju/release-downloader@v1.11
+        uses: robinraju/release-downloader@v1.12
         with:
           fileName: "*.tar.bz2"
           tag: "${{ inputs.tag }}"
