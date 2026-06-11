@@ -39,7 +39,7 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: ${{ steps.archive.outputs.files }}
           token: ${{ secrets.GITHUB_TOKEN }}
