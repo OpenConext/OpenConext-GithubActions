@@ -23,6 +23,13 @@ jobs:
       - name: Run php local security checker
         if: steps.check_composer.outputs.files_exists == 'true'
         uses: symfonycorp/security-checker-action@v5
+      - name: Setup PHP 8.2
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+      - name: Composer install
+        if: steps.check_composer.outputs.files_exists == 'true'
+        run: composer install --no-interaction
 
       # node-yarn checks
       - name: Check for node-yarn project
@@ -35,13 +42,6 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 18
-      - name: Setup PHP 8.2
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.2'
-      - name: Composer install
-        if: steps.check_node_yarn.outputs.files_exists == 'true'
-        run: composer install --no-interaction
       - name: Yarn Audit
         if: steps.check_node_yarn.outputs.files_exists == 'true'
         run: yarn audit --level high --groups dependencies optionalDependencies
